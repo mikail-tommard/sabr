@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Техническое задание на разработку платформы Sabr</title>
+  <style>
+    @page {
+      margin: 2.2cm 2cm 2.2cm 2cm;
+    }
+
+    body {
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color: #1b1f23;
+      line-height: 1.45;
+      font-size: 11pt;
+      margin: 0;
+      background: #ffffff;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0;
+      color: #0f2744;
+    }
+
+    h1 {
+      font-size: 24pt;
+      line-height: 1.15;
+      margin-bottom: 14pt;
+    }
+
+    h2 {
+      font-size: 17pt;
+      margin-top: 20pt;
+      margin-bottom: 10pt;
+      padding-bottom: 4pt;
+      border-bottom: 2px solid #dbe7f3;
+    }
+
+    h3 {
+      font-size: 13pt;
+      margin-top: 14pt;
+      margin-bottom: 8pt;
+    }
+
+    p {
+      margin: 0 0 8pt 0;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin: 0 0 10pt 18pt;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 4pt;
+    }
+
+    code, pre {
+      font-family: Menlo, Consolas, monospace;
+    }
+
+    pre {
+      background: #f5f8fc;
+      border: 1px solid #d9e2ec;
+      border-radius: 8px;
+      padding: 10pt 12pt;
+      font-size: 9.5pt;
+      line-height: 1.35;
+      white-space: pre-wrap;
+      margin: 0 0 10pt 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 12pt 0;
+      font-size: 10.5pt;
+    }
+
+    th, td {
+      border: 1px solid #cfd9e3;
+      padding: 7pt 8pt;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eff5fb;
+      color: #0f2744;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .cover {
+      min-height: 24cm;
+      padding: 1.4cm 0 0.8cm 0;
+    }
+
+    .cover-top {
+      color: #4d5b6a;
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      font-size: 10pt;
+      margin-bottom: 50pt;
+    }
+
+    .cover-card {
+      background: linear-gradient(135deg, #0f2744 0%, #1f4d7a 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 24pt 26pt;
+      box-shadow: 0 10pt 24pt rgba(15, 39, 68, 0.16);
+      margin-bottom: 20pt;
+    }
+
+    .cover-card p {
+      color: #e7eef6;
+      text-align: left;
+      margin-bottom: 0;
+    }
+
+    .meta {
+      width: 100%;
+      margin-top: 22pt;
+      border: 0;
+    }
+
+    .meta td {
+      border: 0;
+      padding: 4pt 0;
+    }
+
+    .muted {
+      color: #5b6670;
+    }
+
+    .lead {
+      font-size: 12pt;
+      color: #2d3b47;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4pt 8pt;
+      margin: 0 6pt 6pt 0;
+      border-radius: 999px;
+      background: #eef4fb;
+      color: #0f2744;
+      font-size: 9pt;
+      font-weight: 700;
+    }
+
+    .callout {
+      background: #f7fbff;
+      border-left: 4px solid #2f6ea6;
+      padding: 10pt 12pt;
+      margin: 0 0 12pt 0;
+      border-radius: 6px;
+    }
+
+    .section-note {
+      color: #46505a;
+      font-size: 10pt;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .small {
+      font-size: 9.5pt;
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div class="cover-top">Документ проекта</div>
+    <div class="cover-card">
+      <h1>Техническое задание на разработку платформы Sabr</h1>
+      <p class="lead">Web-платформа для студентов, выпускников, менторов и участников IT-сообщества с Q&amp;A, публикациями, модерацией, репутацией, бейджами и персонализированной лентой.</p>
+    </div>
+
+    <div>
+      <span class="badge">Go Backend</span>
+      <span class="badge">PostgreSQL</span>
+      <span class="badge">Vue Frontend</span>
+      <span class="badge">JWT Auth</span>
+      <span class="badge">Modular Monolith</span>
+      <span class="badge">Recommendation Feed</span>
+    </div>
+
+    <table class="meta">
+      <tr>
+        <td><strong>Проект:</strong> Sabr</td>
+        <td><strong>Тип документа:</strong> Техническое задание</td>
+      </tr>
+      <tr>
+        <td><strong>Формат:</strong> MVP → Production-ready foundation</td>
+        <td><strong>Дата подготовки:</strong> 10.05.2026</td>
+      </tr>
+    </table>
+
+    <p class="muted small">Документ описывает цели, архитектуру, сущности, API, бизнес-логику, ограничения и этапы разработки платформы Sabr.</p>
+  </section>
+
+  <section class="page-break">
+    <h2>1. Общее описание проекта</h2>
+    <p>Sabr — это web-платформа для студентов, выпускников, менторов и участников IT-сообщества. Основная идея проекта заключается в создании единого пространства, где пользователи могут задавать вопросы, получать ответы, публиковать материалы, обсуждать темы, делиться опытом и развивать профессиональное сообщество внутри разных кампусов.</p>
+    <p>Платформа объединяет функциональность Q&amp;A-сервиса, социальной ленты, системы публикаций, профилей пользователей, модерации, репутации, бейджей и персонализированной рекомендательной ленты.</p>
+    <p>Проект должен быть реализован как модульный монолит. Такой подход позволяет разрабатывать backend как одно приложение, но при этом разделить код на независимые логические модули: авторизация, пользователи, вопросы, ответы, посты, комментарии, лента, рекомендации, репутация, бейджи, админка и модерация.</p>
+
+    <h2>2. Цель проекта</h2>
+    <p>Цель проекта — разработать backend и frontend web-платформы Sabr, которая позволит пользователям взаимодействовать с образовательным и профессиональным контентом, получать помощь от других участников, публиковать материалы и развивать личную репутацию внутри сообщества.</p>
+    <div class="callout">
+      <strong>Ключевой результат:</strong> единая платформа сообщества с надёжной базовой социальной механикой, модерацией и персонализированной лентой, пригодная для запуска MVP и дальнейшего масштабирования.
+    </div>
+    <ol>
+      <li>Обеспечить регистрацию и авторизацию пользователей.</li>
+      <li>Позволить пользователям создавать вопросы.</li>
+      <li>Позволить пользователям отвечать на вопросы.</li>
+      <li>Позволить пользователям публиковать посты.</li>
+      <li>Позволить пользователям комментировать контент.</li>
+      <li>Реализовать систему лайков и голосов.</li>
+      <li>Реализовать систему ролей и прав доступа.</li>
+      <li>Реализовать систему жалоб и модерации.</li>
+      <li>Реализовать административную панель.</li>
+      <li>Реализовать систему репутации.</li>
+      <li>Реализовать систему бейджей и публичных званий.</li>
+      <li>Реализовать персонализированную ленту рекомендаций.</li>
+      <li>Обеспечить фильтрацию, сортировку и поиск контента.</li>
+      <li>Обеспечить возможность дальнейшего масштабирования проекта.</li>
+    </ol>
+
+    <h2>3. Основные пользователи системы</h2>
+    <table>
+      <tr>
+        <th>Тип пользователя</th>
+        <th>Описание и возможности</th>
+      </tr>
+      <tr>
+        <td>Гость</td>
+        <td>Может просматривать часть публичного контента, но не может создавать вопросы, ответы, посты и комментарии.</td>
+      </tr>
+      <tr>
+        <td>Студент</td>
+        <td>Базовый зарегистрированный пользователь. Может создавать вопросы, отвечать, публиковать посты, комментировать, голосовать, лайкать и отправлять жалобы.</td>
+      </tr>
+      <tr>
+        <td>Ментор</td>
+        <td>Проверенный пользователь, который помогает другим участникам. Ответы ментора могут визуально выделяться в интерфейсе.</td>
+      </tr>
+      <tr>
+        <td>Выпускник</td>
+        <td>Может делиться опытом, публиковать материалы и помогать студентам.</td>
+      </tr>
+      <tr>
+        <td>Модератор</td>
+        <td>Отвечает за качество контента. Может скрывать материалы, удалять комментарии, рассматривать жалобы и применять ограничения к нарушителям.</td>
+      </tr>
+      <tr>
+        <td>Администратор</td>
+        <td>Имеет полный доступ к управлению системой, пользователями, ролями, кампусами, тегами, контентом, бейджами и настройками.</td>
+      </tr>
+    </table>
+
+    <h2>4. Архитектура проекта</h2>
+    <p>Проект реализуется по архитектуре модульного монолита.</p>
+    <p>Backend представляет собой одно приложение, написанное на Go, внутри которого код разделён на модули по бизнес-логике.</p>
+    <h3>Рекомендуемая структура backend</h3>
+    <pre>sabr-backend/
+  cmd/
+    api/
+      main.go
+
+  internal/
+    auth/
+    users/
+    campuses/
+    tags/
+    questions/
+    answers/
+    posts/
+    comments/
+    votes/
+    reports/
+    feed/
+    recommendations/
+    reputation/
+    badges/
+    admin/
+    uploads/
+    notifications/
+
+  pkg/
+    config/
+    database/
+    middleware/
+    response/
+    validator/
+    logger/
+    security/
+
+  migrations/
+  docs/
+  Dockerfile
+  docker-compose.yml
+  go.mod</pre>
+
+    <h3>Структура каждого модуля</h3>
+    <pre>handler.go
+service.go
+repository.go
+dto.go
+model.go</pre>
+
+    <table>
+      <tr>
+        <th>Слой</th>
+        <th>Назначение</th>
+      </tr>
+      <tr>
+        <td>handler</td>
+        <td>Принимает HTTP-запросы и возвращает ответы.</td>
+      </tr>
+      <tr>
+        <td>service</td>
+        <td>Содержит бизнес-логику.</td>
+      </tr>
+      <tr>
+        <td>repository</td>
+        <td>Работает с базой данных.</td>
+      </tr>
+      <tr>
+        <td>dto</td>
+        <td>Содержит структуры запросов и ответов.</td>
+      </tr>
+      <tr>
+        <td>model</td>
+        <td>Содержит структуры сущностей.</td>
+      </tr>
+    </table>
+
+    <h2>5. Технологический стек</h2>
+    <table>
+      <tr>
+        <th>Слой</th>
+        <th>Рекомендуемые технологии</th>
+      </tr>
+      <tr>
+        <td>Backend</td>
+        <td>Go, Gin или Fiber, PostgreSQL, JWT, bcrypt, golang-migrate, pgx/sqlc/GORM, Docker, Docker Compose, Swagger/OpenAPI, zerolog/zap/slog, go-playground/validator</td>
+      </tr>
+      <tr>
+        <td>Frontend</td>
+        <td>Vue, Pinia, Vue Router, TypeScript, Axios или Fetch API, TailwindCSS или существующий UI-подход проекта</td>
+      </tr>
+      <tr>
+        <td>Файлы</td>
+        <td>Локальное хранилище для MVP, MinIO или S3 для расширенной версии</td>
+      </tr>
+    </table>
+  </section>
+
+  <section class="page-break">
+    <h2>6. Модули системы</h2>
+    <table>
+      <tr>
+        <th>Модуль</th>
+        <th>Назначение</th>
+      </tr>
+      <tr><td>auth</td><td>Регистрация, вход, токены, текущий пользователь</td></tr>
+      <tr><td>users</td><td>Профили, роли, блокировки, публичные звания</td></tr>
+      <tr><td>campuses</td><td>Управление кампусами</td></tr>
+      <tr><td>tags</td><td>Управление тегами</td></tr>
+      <tr><td>questions</td><td>Вопросы</td></tr>
+      <tr><td>answers</td><td>Ответы</td></tr>
+      <tr><td>posts</td><td>Публикации</td></tr>
+      <tr><td>comments</td><td>Комментарии</td></tr>
+      <tr><td>votes</td><td>Голоса и лайки</td></tr>
+      <tr><td>reports</td><td>Жалобы</td></tr>
+      <tr><td>feed</td><td>Общая лента</td></tr>
+      <tr><td>recommendations</td><td>Рекомендательный алгоритм</td></tr>
+      <tr><td>reputation</td><td>Репутация пользователей</td></tr>
+      <tr><td>badges</td><td>Бейджи и достижения</td></tr>
+      <tr><td>admin</td><td>Административная панель</td></tr>
+      <tr><td>uploads</td><td>Загрузка изображений</td></tr>
+      <tr><td>notifications</td><td>Уведомления</td></tr>
+    </table>
+
+    <h2>7. Авторизация и аутентификация</h2>
+    <h3>Основные функции</h3>
+    <ol>
+      <li>Регистрация пользователя.</li>
+      <li>Вход по email и паролю.</li>
+      <li>Хеширование пароля.</li>
+      <li>Выдача access token.</li>
+      <li>Выдача refresh token.</li>
+      <li>Обновление access token через refresh token.</li>
+      <li>Получение текущего пользователя.</li>
+      <li>Logout.</li>
+      <li>Middleware для защиты приватных маршрутов.</li>
+      <li>Middleware для проверки ролей.</li>
+      <li>Запрет действий для заблокированных пользователей.</li>
+    </ol>
+
+    <h3>Основные endpoint-ы</h3>
+    <pre>POST /auth/register
+POST /auth/login
+POST /auth/refresh
+POST /auth/logout
+GET /me</pre>
+
+    <h3>Требования безопасности</h3>
+    <ol>
+      <li>Пароль не должен храниться в открытом виде.</li>
+      <li><code>password_hash</code> не должен возвращаться в API.</li>
+      <li>Access token должен иметь ограниченный срок жизни.</li>
+      <li>Refresh token должен храниться безопасно.</li>
+      <li>Приватные маршруты должны требовать авторизации.</li>
+      <li>Административные маршруты должны требовать соответствующей роли.</li>
+      <li>Заблокированные пользователи не должны иметь возможность создавать контент.</li>
+    </ol>
+
+    <h2>8. Пользователи</h2>
+    <h3>Основные поля пользователя</h3>
+    <pre>id
+name
+username
+email
+password_hash
+avatar_url
+campus_id
+role
+title
+bio
+reputation
+level
+is_banned
+is_verified
+created_at
+updated_at
+last_seen_at</pre>
+
+    <p>Роль пользователя отвечает за права доступа. Публичное звание отвечает за отображение статуса пользователя в интерфейсе.</p>
+    <pre>role: Admin
+title: Founder
+
+role: Student
+title: Trusted Contributor</pre>
+
+    <h3>Основные endpoint-ы</h3>
+    <pre>GET /users
+GET /users/top
+GET /users/:id
+PATCH /users/me
+GET /users/:id/activity
+GET /users/:id/badges
+GET /users/:id/reputation</pre>
+
+    <h3>Административные endpoint-ы</h3>
+    <pre>GET /admin/users
+PATCH /admin/users/:id/role
+PATCH /admin/users/:id/ban
+PATCH /admin/users/:id/title
+PATCH /admin/users/:id/verify</pre>
+
+    <h2>9. Роли и права доступа</h2>
+    <h3>Роли системы</h3>
+    <pre>Student
+Mentor
+Alumni
+Moderator
+Admin</pre>
+
+    <p>Founder рекомендуется реализовать не как отдельную техническую роль, а как публичное звание и системный бейдж.</p>
+    <h3>Права доступа</h3>
+    <ol>
+      <li>Гость может просматривать публичные материалы.</li>
+      <li>Student может создавать вопросы, ответы, посты, комментарии, лайкать, голосовать и отправлять жалобы.</li>
+      <li>Mentor имеет права Student, но его ответы могут выделяться как ответы проверенного участника.</li>
+      <li>Alumni имеет права Student и может иметь бейдж Verified Alumni.</li>
+      <li>Moderator может скрывать контент, удалять комментарии и рассматривать жалобы.</li>
+      <li>Admin может управлять всей системой.</li>
+    </ol>
+
+    <h3>Необходимые middleware</h3>
+    <pre>AuthRequired
+NotBanned
+AdminOnly
+ModeratorOrAdmin
+OwnerOrAdmin
+RoleRequired</pre>
+  </section>
+
+  <section class="page-break">
+    <h2>10. Кампусы</h2>
+    <h3>Основные поля кампуса</h3>
+    <pre>id
+name
+city
+description
+created_at
+updated_at</pre>
+
+    <h3>Основные endpoint-ы</h3>
+    <pre>GET /campuses
+GET /campuses/:id
+GET /campuses/:id/feed
+POST /admin/campuses
+PATCH /admin/campuses/:id
+DELETE /admin/campuses/:id</pre>
+
+    <p><strong>Ограничение:</strong> кампус нельзя удалить, если к нему привязаны пользователи, вопросы или посты.</p>
+
+    <h2>11. Теги</h2>
+    <h3>Примеры тегов</h3>
+    <pre>Go
+JavaScript
+Vue
+PostgreSQL
+Backend
+Frontend
+Algorithms
+DevOps
+Docker
+API
+Databases</pre>
+
+    <h3>Основные поля тега</h3>
+    <pre>id
+name
+slug
+usage_count
+created_at
+updated_at</pre>
+
+    <h3>Связующие таблицы</h3>
+    <pre>question_tags
+post_tags</pre>
+
+    <h3>Основные endpoint-ы</h3>
+    <pre>GET /tags
+GET /tags/top
+POST /admin/tags
+PATCH /admin/tags/:id
+DELETE /admin/tags/:id</pre>
+
+    <h2>12. Вопросы</h2>
+    <h3>Основные поля вопроса</h3>
+    <pre>id
+title
+summary
+description
+code
+tried
+author_id
+campus_id
+status
+is_solved
+best_answer_id
+is_pinned
+upvotes_count
+answers_count
+comments_count
+reports_count
+created_at
+updated_at
+deleted_at</pre>
+
+    <h3>Статусы вопроса</h3>
+    <pre>active
+hidden
+deleted</pre>
+
+    <h3>Основные endpoint-ы</h3>
+    <pre>GET /questions
+GET /questions/:id
+POST /questions
+PATCH /questions/:id
+DELETE /questions/:id
+POST /questions/:id/vote
+POST /questions/:id/best-answer</pre>
+
+    <h3>Основная логика</h3>
+    <ol>
+      <li>Автор может редактировать и удалять свой вопрос.</li>
+      <li>Модератор и администратор могут скрывать вопрос.</li>
+      <li>Автор вопроса может выбрать лучший ответ.</li>
+      <li>При выборе лучшего ответа вопрос получает статус solved.</li>
+      <li>Закреплённые вопросы могут отображаться выше обычных.</li>
+      <li>Скрытые и удалённые вопросы не отображаются обычным пользователям.</li>
+      <li>Вопрос может иметь несколько тегов.</li>
+      <li>Вопрос может быть связан с кампусом.</li>
+    </ol>
+
+    <h2>13. Ответы</h2>
+    <h3>Основные поля ответа</h3>
+    <pre>id
+question_id
+author_id
+content
+upvotes_count
+comments_count
+is_best
+status
+created_at
+updated_at
+deleted_at</pre>
+
+    <h3>Основные endpoint-ы</h3>
+    <pre>GET /questions/:id/answers
+POST /questions/:id/answers
+PATCH /answers/:id
+DELETE /answers/:id
+POST /answers/:id/vote
+POST /answers/:id/best</pre>
+
+    <h3>Основная логика</h3>
+    <ol>
+      <li>Пользователь может оставить ответ на вопрос.</li>
+      <li>Автор ответа может редактировать и удалить свой ответ.</li>
+      <li>Пользователи могут голосовать за полезные ответы.</li>
+      <li>Лучший ответ выделяется отдельно.</li>
+      <li>Автор лучшего ответа получает репутацию.</li>
+      <li>Если лучший ответ удалён, вопрос снова становится нерешённым.</li>
+      <li>Ответы менторов могут визуально выделяться.</li>
+    </ol>
+  </section>
+
+  <section class="page-break">
+    <h2>14. Посты</h2>
+    <h3>Основные поля поста</h3>
+    <pre>id
+title
+summary
+content
+author_id
+campus_id
+status
+is_featured
+likes_count
+comments_count
+reports_count
+views_count
+created_at
+updated_at
+deleted_at</pre>
+
+    <h3>Изображения постов</h3>
+    <pre>post_images
+id
+post_id
+url
+storage_key
+sort_order
+created_at</pre>
+
+    <h3>Основные endpoint-ы</h3>
+    <pre>GET /posts
+GET /posts/:id
+POST /posts
+PATCH /posts/:id
+DELETE /posts/:id
+POST /posts/:id/like</pre>
+
+    <h3>Административные endpoint-ы</h3>
+    <pre>GET /admin/posts
+PATCH /admin/posts/:id/status
+PATCH /admin/posts/:id/featured
+DELETE /admin/posts/:id</pre>
+
+    <h3>Основная логика</h3>
+    <ol>
+      <li>Пользователь может создать пост.</li>
+      <li>Автор может редактировать и удалить свой пост.</li>
+      <li>Пост может иметь теги.</li>
+      <li>Пост может относиться к кампусу.</li>
+      <li>Пользователи могут ставить лайки.</li>
+      <li>Администратор может отметить пост как featured.</li>
+      <li>Featured-посты могут получать повышенный рейтинг в ленте.</li>
+      <li>Скрытые и удалённые посты не отображаются обычным пользователям.</li>
+    </ol>
+
+    <h2>15. Комментарии</h2>
+    <h3>Основные поля комментария</h3>
+    <pre>id
+parent_type
+parent_id
+author_id
+content
+status
+created_at
+updated_at
+deleted_at</pre>
+
+    <h3>Типы parent_type</h3>
+    <pre>question
+answer
+post</pre>
+
+    <h3>Основные endpoint-ы</h3>
+    <pre>GET /comments?parentType=post&amp;parentId=...
+POST /comments
+PATCH /comments/:id
+DELETE /comments/:id
+DELETE /admin/comments/:id</pre>
+
+    <h3>Основная логика</h3>
+    <ol>
+      <li>Пользователь может комментировать вопросы, ответы и посты.</li>
+      <li>Автор может редактировать и удалять свой комментарий.</li>
+      <li>Модератор и администратор могут удалять любые комментарии.</li>
+      <li>Скрытые и удалённые комментарии не отображаются обычным пользователям.</li>
+    </ol>
+
+    <h2>16. Голоса и лайки</h2>
+    <h3>Таблицы</h3>
+    <pre>question_votes
+id
+question_id
+user_id
+value
+created_at
+
+answer_votes
+id
+answer_id
+user_id
+value
+created_at
+
+post_likes
+id
+post_id
+user_id
+created_at</pre>
+
+    <h3>Основная логика</h3>
+    <ol>
+      <li>Пользователь может поставить только один голос за один вопрос.</li>
+      <li>Пользователь может поставить только один голос за один ответ.</li>
+      <li>Пользователь может поставить только один лайк на один пост.</li>
+      <li>Повторное действие может отменять голос или лайк.</li>
+      <li>Пользователь не должен иметь возможность накручивать показатели.</li>
+      <li>Голоса заблокированных пользователей не должны учитываться.</li>
+      <li>При удалении контента связанные голоса не должны влиять на репутацию.</li>
+    </ol>
+
+    <h2>17. Жалобы</h2>
+    <h3>Основные поля жалобы</h3>
+    <pre>id
+reporter_id
+target_type
+target_id
+reason
+note
+status
+moderator_id
+resolution_note
+created_at
+updated_at</pre>
+
+    <h3>Типы target_type</h3>
+    <pre>question
+answer
+post
+comment
+user</pre>
+
+    <h3>Причины жалоб</h3>
+    <pre>spam
+abuse
+incorrect_information
+off_topic
+harassment
+other</pre>
+
+    <h3>Статусы жалоб</h3>
+    <pre>open
+in_review
+resolved
+rejected</pre>
+
+    <h3>Основные endpoint-ы</h3>
+    <pre>POST /reports
+GET /admin/reports
+GET /admin/reports/:id
+PATCH /admin/reports/:id/status
+PATCH /admin/reports/:id/resolve</pre>
+  </section>
+
+  <section class="page-break">
+    <h2>18. Административная панель</h2>
+    <h3>Разделы админки</h3>
+    <ol>
+      <li>Dashboard.</li>
+      <li>Пользователи.</li>
+      <li>Вопросы.</li>
+      <li>Ответы.</li>
+      <li>Посты.</li>
+      <li>Комментарии.</li>
+      <li>Жалобы.</li>
+      <li>Теги.</li>
+      <li>Кампусы.</li>
+      <li>Бейджи.</li>
+      <li>Настройки.</li>
+    </ol>
+
+    <h3>Основные endpoint-ы</h3>
+    <pre>GET /admin/stats
+
+GET /admin/users
+PATCH /admin/users/:id/role
+PATCH /admin/users/:id/ban
+PATCH /admin/users/:id/title
+PATCH /admin/users/:id/verify
+
+GET /admin/questions
+PATCH /admin/questions/:id/status
+PATCH /admin/questions/:id/pin
+
+GET /admin/posts
+PATCH /admin/posts/:id/status
+PATCH /admin/posts/:id/featured
+
+GET /admin/comments
+DELETE /admin/comments/:id
+
+GET /admin/reports
+PATCH /admin/reports/:id
+
+POST /admin/tags
+PATCH /admin/tags/:id
+DELETE /admin/tags/:id
+
+POST /admin/campuses
+PATCH /admin/campuses/:id
+DELETE /admin/campuses/:id
+
+POST /admin/badges
+PATCH /admin/badges/:id
+DELETE /admin/badges/:id
+POST /admin/users/:id/badges
+DELETE /admin/users/:id/badges/:badgeId</pre>
+
+    <h3>Поля dashboard</h3>
+    <pre>users_count
+questions_count
+answers_count
+posts_count
+comments_count
+open_reports_count
+banned_users_count
+new_users_today
+new_content_today</pre>
+
+    <h2>19. Система репутации</h2>
+    <p>Репутация должна отражать полезность пользователя, качество его ответов, активность и доверие со стороны сообщества.</p>
+    <h3>Таблица reputation_events</h3>
+    <pre>id
+user_id
+source_type
+source_id
+points
+reason
+created_at</pre>
+
+    <h3>Примеры начисления</h3>
+    <pre>+2 за созданный вопрос
++5 за созданный ответ
++20 за ответ, выбранный лучшим
++3 за созданный пост
++1 за лайк на посте
++2 за апвоут ответа
++15 за featured-пост
+-10 за скрытый контент
+-25 за блокировку пользователя</pre>
+
+    <h3>Правила защиты от накрутки</h3>
+    <ol>
+      <li>Нельзя начислять репутацию за собственные лайки.</li>
+      <li>Нельзя повторно начислять репутацию за одно и то же событие.</li>
+      <li>Голоса заблокированных пользователей не учитываются.</li>
+      <li>Удалённый или скрытый контент не должен продолжать давать репутацию.</li>
+      <li>Все изменения репутации должны фиксироваться в <code>reputation_events</code>.</li>
+      <li>При необходимости репутация пользователя может быть пересчитана на основе событий.</li>
+    </ol>
+
+    <h2>20. Система бейджей</h2>
+    <h3>Категории бейджей</h3>
+    <ol>
+      <li>system</li>
+      <li>contribution</li>
+      <li>expertise</li>
+      <li>trust</li>
+      <li>campus</li>
+    </ol>
+
+    <h3>Таблицы</h3>
+    <pre>badges
+id
+code
+name
+description
+category
+icon
+is_manual
+is_active
+created_at
+updated_at
+
+user_badges
+id
+user_id
+badge_id
+awarded_by
+awarded_reason
+created_at</pre>
+
+    <h3>Рекомендуемые бейджи</h3>
+    <pre>Platform Founder
+Moderator
+Verified Mentor
+Verified Alumni
+First Question
+First Answer
+Accepted Answer
+Helpful Contributor
+Reliable Helper
+Community Writer
+Featured Author
+Trusted Member
+Campus Contributor
+Backend Contributor
+Frontend Contributor</pre>
+  </section>
+
+  <section class="page-break">
+    <h2>21. Публичные звания</h2>
+    <p>Публичное звание отображается рядом с именем пользователя и показывает его статус в сообществе. Важно отличать роль от звания: роль определяет права доступа, звание показывает статус пользователя.</p>
+    <h3>Примеры званий</h3>
+    <pre>Founder
+Verified Mentor
+Trusted Contributor
+Community Writer
+Campus Contributor
+Backend Contributor
+Frontend Contributor
+Active Member</pre>
+
+    <h2>22. Уровни пользователя</h2>
+    <h3>Примеры уровней</h3>
+    <pre>Level 1 — New Member
+Level 2 — Active Member
+Level 3 — Contributor
+Level 4 — Trusted Contributor
+Level 5 — Community Expert
+Level 6 — Senior Contributor
+Level 7 — Distinguished Member</pre>
+
+    <h3>Пороговые значения</h3>
+    <pre>Level 1: 0–49 reputation
+Level 2: 50–149 reputation
+Level 3: 150–349 reputation
+Level 4: 350–749 reputation
+Level 5: 750–1499 reputation
+Level 6: 1500–2999 reputation
+Level 7: 3000+ reputation</pre>
+
+    <p>Уровень может пересчитываться автоматически при изменении репутации.</p>
+
+    <h2>23. Уведомления</h2>
+    <h3>Таблица notifications</h3>
+    <pre>id
+user_id
+type
+text
+href
+is_read
+created_at</pre>
+
+    <h3>Уведомления создаются при событиях</h3>
+    <ol>
+      <li>Пользователь получил ответ на свой вопрос.</li>
+      <li>Пользователь получил комментарий.</li>
+      <li>Ответ пользователя выбран лучшим.</li>
+      <li>Пользователь получил новый бейдж.</li>
+      <li>Пост пользователя отмечен как featured.</li>
+      <li>Жалоба пользователя рассмотрена.</li>
+      <li>Контент пользователя скрыт модератором.</li>
+      <li>Пользователь получил изменение роли или звания.</li>
+    </ol>
+
+    <h3>Endpoint-ы</h3>
+    <pre>GET /notifications
+PATCH /notifications/:id/read
+PATCH /notifications/read-all</pre>
+
+    <h2>24. Загрузка изображений</h2>
+    <h3>Endpoint-ы</h3>
+    <pre>POST /uploads/images
+DELETE /uploads/:id</pre>
+
+    <h3>Требования</h3>
+    <ol>
+      <li>Разрешённые форматы: jpg, jpeg, png, webp.</li>
+      <li>Максимальный размер файла должен быть ограничен.</li>
+      <li>Изображение должно принадлежать пользователю или посту.</li>
+      <li>Удалять изображение может владелец или администратор.</li>
+      <li>Для MVP допускается локальное хранение.</li>
+      <li>В расширенной версии рекомендуется использовать MinIO или S3.</li>
+    </ol>
+
+    <h2>25. Лента контента</h2>
+    <p>Платформа должна иметь общую ленту, которая объединяет вопросы и посты.</p>
+    <h3>Основной endpoint</h3>
+    <pre>GET /feed</pre>
+
+    <h3>Параметры</h3>
+    <pre>mode=new
+mode=hot
+mode=for_you
+mode=campus
+mode=unanswered
+mode=featured
+type=all
+type=question
+type=post
+campusId=...
+tagId=...
+q=...
+limit=20
+cursor=...</pre>
+
+    <h3>Режимы ленты</h3>
+    <ol>
+      <li>New — новые материалы.</li>
+      <li>Hot — популярные и свежие материалы.</li>
+      <li>For You — персональная лента.</li>
+      <li>Campus — материалы кампуса пользователя.</li>
+      <li>Unanswered — вопросы без ответа.</li>
+      <li>Featured — материалы, отмеченные администрацией.</li>
+    </ol>
+  </section>
+
+  <section class="page-break">
+    <h2>26. Рекомендательная система</h2>
+    <p>Рекомендательная система Sabr должна быть <strong>rule-based</strong>, то есть основанной на правилах и формулах, а не на машинном обучении. Такой подход позволяет сделать систему понятной, управляемой и реалистичной для реализации на этапе MVP.</p>
+    <p>Система должна учитывать свежесть публикации, активность, теги, кампус, репутацию автора, жалобы, featured-статус, историю взаимодействий пользователя и разнообразие выдачи.</p>
+
+    <h2>27. Этапы работы рекомендательной системы</h2>
+    <pre>1. Candidate generation
+2. Filtering
+3. Scoring
+4. Ranking
+5. Re-ranking
+6. Tracking events</pre>
+
+    <h3>27.1. Candidate generation</h3>
+    <ol>
+      <li>Новые посты за последние 7 дней.</li>
+      <li>Новые вопросы за последние 7 дней.</li>
+      <li>Материалы из кампуса пользователя.</li>
+      <li>Материалы по интересующим тегам.</li>
+      <li>Featured-посты.</li>
+      <li>Нерешённые вопросы.</li>
+      <li>Популярные материалы за неделю.</li>
+      <li>Материалы от авторов с высокой репутацией.</li>
+    </ol>
+    <p>Каждый раз не следует ранжировать всю базу. Сначала выбирается ограниченный набор кандидатов, например 300–500 записей.</p>
+
+    <h3>27.2. Filtering</h3>
+    <ol>
+      <li>Удалённый контент.</li>
+      <li>Скрытый контент.</li>
+      <li>Контент заблокированных пользователей.</li>
+      <li>Контент с большим количеством жалоб.</li>
+      <li>Материалы, которые пользователь скрыл.</li>
+      <li>Повторы.</li>
+      <li>Материалы, недоступные пользователю по правилам системы.</li>
+    </ol>
+
+    <h3>27.3. Scoring</h3>
+    <p>На этом этапе каждому материалу присваивается числовая оценка <code>score</code>. Чем выше <code>score</code>, тем выше материал в ленте.</p>
+    <pre>post_score =
+freshness_score
++ engagement_score
++ author_score
++ campus_score
++ tag_score
++ featured_score
+- report_penalty
+
+question_score =
+freshness_score
++ urgency_score
++ tag_score
++ campus_score
++ upvote_score
++ author_score
++ unanswered_bonus
+- solved_penalty
+- report_penalty</pre>
+
+    <h3>27.4. Ranking</h3>
+    <pre>ORDER BY score DESC</pre>
+
+    <h3>27.5. Re-ranking</h3>
+    <ol>
+      <li>Не показывать больше двух материалов подряд от одного автора.</li>
+      <li>Не показывать слишком много материалов подряд с одним тегом.</li>
+      <li>Чередовать вопросы и посты.</li>
+      <li>Добавлять новые материалы даже с низким score.</li>
+      <li>Поднимать нерешённые вопросы.</li>
+      <li>Добавлять разнообразие по темам.</li>
+      <li>Не показывать один и тот же материал слишком часто.</li>
+    </ol>
+
+    <h3>27.6. Tracking events</h3>
+    <p>Система должна фиксировать взаимодействия пользователя с контентом. События нужны для персонализации и анализа качества рекомендаций.</p>
+
+    <h2>28. События пользователя для рекомендаций</h2>
+    <h3>Таблица user_content_events</h3>
+    <pre>id
+user_id
+content_type
+content_id
+event_type
+weight
+created_at</pre>
+
+    <h3>Типы событий и веса</h3>
+    <table>
+      <tr>
+        <th>Событие</th>
+        <th>Вес</th>
+      </tr>
+      <tr><td>view</td><td>+1</td></tr>
+      <tr><td>open</td><td>+2</td></tr>
+      <tr><td>like</td><td>+4</td></tr>
+      <tr><td>comment</td><td>+6</td></tr>
+      <tr><td>answer</td><td>+8</td></tr>
+      <tr><td>save</td><td>+10</td></tr>
+      <tr><td>hide</td><td>отрицательный сигнал</td></tr>
+      <tr><td>report</td><td>-20</td></tr>
+      <tr><td>not_interested</td><td>-10</td></tr>
+    </table>
+
+    <h2>29. Интересы пользователя</h2>
+    <h3>Таблица user_tag_interests</h3>
+    <pre>id
+user_id
+tag_id
+weight
+updated_at</pre>
+
+    <h3>Правила изменения интересов</h3>
+    <ol>
+      <li>Открыл материал с тегом Go — вес Go увеличивается на 1.</li>
+      <li>Лайкнул материал с тегом Go — вес Go увеличивается на 2.</li>
+      <li>Прокомментировал материал с тегом Go — вес Go увеличивается на 3.</li>
+      <li>Ответил на вопрос с тегом Go — вес Go увеличивается на 4.</li>
+      <li>Нажал Not interested — вес соответствующего тега уменьшается.</li>
+      <li>Пожаловался на материал — вес соответствующих тегов может уменьшиться.</li>
+    </ol>
+  </section>
+
+  <section class="page-break">
+    <h2>30. Показы в ленте</h2>
+    <p>Для более серьёзной системы можно хранить показы материалов в таблице <code>feed_impressions</code>.</p>
+    <pre>id
+user_id
+content_type
+content_id
+position
+feed_mode
+score
+shown_at</pre>
+
+    <p>Эта таблица позволяет анализировать, какой материал был показан, на какой позиции, с каким score и как пользователь на него отреагировал.</p>
+
+    <h2>31. Формулы ранжирования</h2>
+    <h3>Для постов</h3>
+    <pre>post_score =
+freshness_score * 25
++ log(1 + likes_count) * 10
++ log(1 + comments_count) * 12
++ author_reputation_score
++ campus_match_bonus
++ tag_interest_score
++ featured_bonus
+- reports_count * 25</pre>
+
+    <p class="section-note">Где <code>author_reputation_score = author_reputation * 0.01</code>, <code>campus_match_bonus = 15</code> при совпадении кампуса, <code>featured_bonus = 30</code> для featured-поста.</p>
+
+    <h3>Для вопросов</h3>
+    <pre>question_score =
+freshness_score * 20
++ log(1 + upvotes_count) * 10
++ log(1 + answers_count) * 6
++ author_reputation_score
++ campus_match_bonus
++ tag_interest_score
++ unanswered_bonus
+- solved_penalty
+- reports_count * 25</pre>
+
+    <p class="section-note">Где <code>unanswered_bonus = 25</code>, если вопрос без ответа, и <code>solved_penalty = 10</code>, если вопрос уже решён.</p>
+
+    <h2>32. Режимы рекомендательной ленты</h2>
+    <table>
+      <tr>
+        <th>Режим</th>
+        <th>Логика</th>
+      </tr>
+      <tr><td>New</td><td>Сортировка по <code>created_at DESC</code>.</td></tr>
+      <tr><td>Hot</td><td>Учитывает лайки, комментарии, ответы, апвоуты, свежесть, featured, репутацию автора и жалобы.</td></tr>
+      <tr><td>For You</td><td>Персонализация по кампусу, тегам, истории действий, популярности, свежести и разнообразию.</td></tr>
+      <tr><td>Campus</td><td>Материалы, связанные с кампусом пользователя.</td></tr>
+      <tr><td>Unanswered</td><td>Вопросы без ответа с учётом тегов, кампуса и активности.</td></tr>
+      <tr><td>Featured</td><td>Материалы, отмеченные администрацией.</td></tr>
+    </table>
+
+    <h2>33. API для ленты и рекомендаций</h2>
+    <h3>Основные endpoint-ы</h3>
+    <pre>GET /feed?mode=new
+GET /feed?mode=hot
+GET /feed?mode=for_you
+GET /feed?mode=campus
+GET /feed?mode=unanswered
+GET /feed?mode=featured</pre>
+
+    <h3>Endpoint для записи событий</h3>
+    <pre>POST /feed/events</pre>
+
+    <h3>Пример тела запроса</h3>
+    <pre>{
+  "contentType": "post",
+  "contentId": "post_123",
+  "eventType": "like"
+}</pre>
+
+    <h3>Endpoint для отрицательной обратной связи</h3>
+    <pre>POST /feed/not-interested</pre>
+
+    <h3>Пример ответа ленты</h3>
+    <pre>{
+  "items": [
+    {
+      "type": "post",
+      "id": "post_123",
+      "title": "How to structure Go backend",
+      "score": 87.4,
+      "reason": "Popular in your campus"
+    }
+  ],
+  "nextCursor": "cursor_value"
+}</pre>
+  </section>
+
+  <section class="page-break">
+    <h2>34. Поиск и фильтрация</h2>
+    <h3>Фильтры</h3>
+    <pre>q
+type
+campusId
+tagId
+authorId
+status
+sort
+createdFrom
+createdTo</pre>
+
+    <h3>Сортировки</h3>
+    <pre>new
+hot
+popular
+unanswered
+featured
+most_commented
+most_liked</pre>
+
+    <p>Для MVP допускается использование простого <code>ILIKE</code> в PostgreSQL. Для расширенной версии рекомендуется PostgreSQL full-text search.</p>
+
+    <h2>35. Нефункциональные требования</h2>
+    <ol>
+      <li>Backend должен быть написан на Go.</li>
+      <li>Данные должны храниться в PostgreSQL.</li>
+      <li>Пароли должны храниться только в хешированном виде.</li>
+      <li>API должно использовать JSON.</li>
+      <li>Приватные маршруты должны быть защищены JWT.</li>
+      <li>Система должна поддерживать роли и права доступа.</li>
+      <li>Система должна поддерживать пагинацию.</li>
+      <li>Система должна поддерживать фильтрацию и сортировку.</li>
+      <li>Система должна возвращать понятные ошибки.</li>
+      <li>Система должна логировать важные действия.</li>
+      <li>Система должна запускаться через Docker Compose.</li>
+      <li>Структура проекта должна быть модульной.</li>
+      <li>Миграции базы данных должны храниться отдельно.</li>
+      <li>Должна быть возможность подключить Swagger-документацию.</li>
+      <li>Система должна быть готова к дальнейшему расширению.</li>
+    </ol>
+
+    <h2>36. Обработка ошибок</h2>
+    <p>API должно возвращать единый формат ошибок.</p>
+    <pre>{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request data",
+    "fields": {
+      "email": "Email is required"
+    }
+  }
+}</pre>
+
+    <h3>Типы ошибок</h3>
+    <pre>VALIDATION_ERROR
+UNAUTHORIZED
+FORBIDDEN
+NOT_FOUND
+CONFLICT
+INTERNAL_ERROR
+TOO_MANY_REQUESTS</pre>
+
+    <h2>37. Пагинация</h2>
+    <p>Для списков допускается <code>limit/offset</code>. Для ленты предпочтительна cursor-based pagination.</p>
+    <pre>GET /feed?mode=for_you&amp;limit=20&amp;cursor=...</pre>
+    <pre>{
+  "items": [],
+  "nextCursor": "next_cursor_value"
+}</pre>
+
+    <h2>38. Основные таблицы базы данных</h2>
+    <pre>users
+campuses
+tags
+questions
+question_tags
+answers
+posts
+post_tags
+post_images
+comments
+question_votes
+answer_votes
+post_likes
+reports
+badges
+user_badges
+reputation_events
+notifications
+user_content_events
+user_tag_interests
+feed_impressions
+refresh_tokens</pre>
+
+    <h2>39. Основные API проекта</h2>
+    <pre>POST /auth/register
+POST /auth/login
+POST /auth/refresh
+POST /auth/logout
+GET /me
+
+GET /users
+GET /users/top
+GET /users/:id
+PATCH /users/me
+GET /users/:id/activity
+GET /users/:id/badges
+GET /users/:id/reputation
+
+GET /campuses
+GET /campuses/:id
+GET /campuses/:id/feed
+
+GET /tags
+GET /tags/top
+
+GET /feed
+POST /feed/events
+POST /feed/not-interested
+
+GET /questions
+GET /questions/:id
+POST /questions
+PATCH /questions/:id
+DELETE /questions/:id
+POST /questions/:id/vote
+POST /questions/:id/best-answer
+
+GET /questions/:id/answers
+POST /questions/:id/answers
+PATCH /answers/:id
+DELETE /answers/:id
+POST /answers/:id/vote
+POST /answers/:id/best
+
+GET /posts
+GET /posts/:id
+POST /posts
+PATCH /posts/:id
+DELETE /posts/:id
+POST /posts/:id/like
+
+GET /comments
+POST /comments
+PATCH /comments/:id
+DELETE /comments/:id
+
+POST /reports
+
+GET /notifications
+PATCH /notifications/:id/read
+PATCH /notifications/read-all
+
+POST /uploads/images
+DELETE /uploads/:id
+
+GET /badges
+GET /users/:id/badges
+
+GET /admin/stats
+GET /admin/users
+PATCH /admin/users/:id/role
+PATCH /admin/users/:id/ban
+PATCH /admin/users/:id/title
+PATCH /admin/users/:id/verify
+
+GET /admin/questions
+PATCH /admin/questions/:id/status
+PATCH /admin/questions/:id/pin
+DELETE /admin/questions/:id
+
+GET /admin/posts
+PATCH /admin/posts/:id/status
+PATCH /admin/posts/:id/featured
+DELETE /admin/posts/:id
+
+GET /admin/comments
+DELETE /admin/comments/:id
+
+GET /admin/reports
+PATCH /admin/reports/:id
+
+POST /admin/tags
+PATCH /admin/tags/:id
+DELETE /admin/tags/:id
+
+POST /admin/campuses
+PATCH /admin/campuses/:id
+DELETE /admin/campuses/:id
+
+POST /admin/badges
+PATCH /admin/badges/:id
+DELETE /admin/badges/:id
+POST /admin/users/:id/badges
+DELETE /admin/users/:id/badges/:badgeId</pre>
+  </section>
+
+  <section class="page-break">
+    <h2>40. Этапы разработки</h2>
+    <table>
+      <tr>
+        <th>Этап</th>
+        <th>Содержание</th>
+      </tr>
+      <tr>
+        <td>Этап 1. Базовая инфраструктура</td>
+        <td>Создание Go-проекта, Docker Compose, PostgreSQL, `.env`, роутер, миграции, логирование, единый формат ошибок</td>
+      </tr>
+      <tr>
+        <td>Этап 2. Авторизация и пользователи</td>
+        <td>Регистрация, логин, refresh token, logout, `/me`, users, roles, middleware, ban check</td>
+      </tr>
+      <tr>
+        <td>Этап 3. Кампусы и теги</td>
+        <td>Campuses CRUD, tags CRUD, связь пользователей с кампусами, связь вопросов и постов с тегами</td>
+      </tr>
+      <tr>
+        <td>Этап 4. Основной контент</td>
+        <td>Questions, answers, posts, comments</td>
+      </tr>
+      <tr>
+        <td>Этап 5. Голоса и лайки</td>
+        <td>Question votes, answer votes, post likes, защита от повторных действий, обновление counters</td>
+      </tr>
+      <tr>
+        <td>Этап 6. Репутация и бейджи</td>
+        <td>Reputation events, начисление репутации, пересчёт уровня, badges, user badges, ручная и автоматическая выдача</td>
+      </tr>
+      <tr>
+        <td>Этап 7. Лента и рекомендации</td>
+        <td>Feed modes, scoring, filtering, re-ranking, user events, user tag interests</td>
+      </tr>
+      <tr>
+        <td>Этап 8. Админка и модерация</td>
+        <td>Admin stats, users moderation, content moderation, reports, tags, campuses, badges</td>
+      </tr>
+      <tr>
+        <td>Этап 9. Дополнительные функции</td>
+        <td>Notifications, uploads, Swagger, testing, frontend integration, deployment preparation</td>
+      </tr>
+    </table>
+
+    <h2>41. Приоритеты MVP</h2>
+    <h3>Обязательно реализовать</h3>
+    <pre>auth
+users
+roles
+campuses
+tags
+questions
+answers
+posts
+comments
+votes
+likes
+reports
+admin moderation
+basic reputation
+basic badges
+feed new/hot/for_you
+frontend integration</pre>
+
+    <h3>Можно отложить</h3>
+    <pre>сложные уведомления
+feed_impressions
+advanced analytics
+MinIO/S3
+OAuth
+email verification
+ML-рекомендации
+сложный антифрод
+полнотекстовый поиск
+расширенные тесты</pre>
+
+    <h2>42. Оценка сложности</h2>
+    <table>
+      <tr>
+        <th>Часть проекта</th>
+        <th>Оценка сложности</th>
+      </tr>
+      <tr><td>auth</td><td>3/10</td></tr>
+      <tr><td>users и roles</td><td>4/10</td></tr>
+      <tr><td>questions и answers</td><td>6/10</td></tr>
+      <tr><td>posts и comments</td><td>6/10</td></tr>
+      <tr><td>votes и likes</td><td>5/10</td></tr>
+      <tr><td>admin moderation</td><td>6/10</td></tr>
+      <tr><td>reports</td><td>4/10</td></tr>
+      <tr><td>reputation</td><td>6/10</td></tr>
+      <tr><td>badges</td><td>6/10</td></tr>
+      <tr><td>recommendation feed</td><td>7/10</td></tr>
+      <tr><td>frontend integration</td><td>6/10</td></tr>
+      <tr><td><strong>MVP в целом</strong></td><td><strong>7/10</strong></td></tr>
+      <tr><td><strong>Полная версия</strong></td><td><strong>8/10</strong></td></tr>
+      <tr><td><strong>Версия с продвинутыми рекомендациями</strong></td><td><strong>8.5/10</strong></td></tr>
+    </table>
+
+    <h3>Примерная оценка времени</h3>
+    <pre>быстрый MVP: 2–3 недели
+нормальный backend MVP: 4–6 недель
+полная версия с рекомендациями, бейджами и админкой: 6–8 недель
+качественная production-like версия: 2–3 месяца</pre>
+
+    <h2>43. Итоговое описание проекта</h2>
+    <p>Sabr — это web-платформа для IT-сообщества, которая объединяет вопросы, ответы, публикации, комментарии, модерацию, репутацию и персонализированную ленту. Пользователи могут задавать вопросы, получать помощь, публиковать полезные материалы, участвовать в обсуждениях и развивать свой профиль через репутацию, уровни и бейджи.</p>
+    <p>Ключевой особенностью проекта является система персонализированной ленты. Она учитывает свежесть контента, активность пользователей, теги, кампус, репутацию автора, жалобы, featured-статус и историю взаимодействий пользователя. Благодаря этому платформа показывает не просто новые материалы, а наиболее полезный и релевантный контент.</p>
+    <p>Дополнительной особенностью является система репутации и бейджей. Она позволяет выделять активных и полезных участников, повышать доверие к качественным ответам и мотивировать пользователей помогать друг другу.</p>
+    <p>Проект должен быть реализован как модульный монолит на Go с использованием PostgreSQL. Такая архитектура позволяет быстро разработать MVP, сохранить понятную структуру кода и оставить возможность дальнейшего масштабирования.</p>
+  </section>
+</body>
+</html>
