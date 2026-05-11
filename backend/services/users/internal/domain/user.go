@@ -8,52 +8,52 @@ import (
 type Role string
 
 const (
-	RoleAdmin Role = "admin"
+	RoleAdmin   Role = "admin"
 	RoleStudent Role = "student"
-	RoleMentor Role = "mentor"
-	RoleAlumni Role = "alumni"
+	RoleMentor  Role = "mentor"
+	RoleAlumni  Role = "alumni"
 )
 
 type User struct {
-	ID string
-	Email string
-	Name string
-	Username string
+	ID        string
+	Email     string
+	Name      string
+	Username  string
 	AvatarURL string
-	Bio string
-	CampusID *string
-	Company *string
-	Role Role
+	Bio       string
+	CampusID  *string
+	Company   *string
+	Role      Role
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 type NewUserParams struct {
-	ID string
-	Email string
-	Name string
-	Username string
+	ID        string
+	Email     string
+	Name      string
+	Username  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 type UpdateProfileParams struct {
-	Name string
-	Username string
+	Name      string
+	Username  string
 	AvatarURL string
-	Bio string
-	CampusID *string
-	Company *string
+	Bio       string
+	CampusID  *string
+	Company   *string
 	UpdatedAt time.Time
 }
 
 func NewUser(params NewUserParams) (*User, error) {
 	u := &User{
-		ID: strings.TrimSpace(params.ID),
-		Email: normalizeEmail(params.Email),
-		Name: strings.TrimSpace(params.Name),
-		Username: normalizeUsername(params.Username),
-		Role: RoleStudent,
+		ID:        strings.TrimSpace(params.ID),
+		Email:     normalizeEmail(params.Email),
+		Name:      strings.TrimSpace(params.Name),
+		Username:  normalizeUsername(params.Username),
+		Role:      RoleStudent,
 		CreatedAt: params.CreatedAt,
 		UpdatedAt: params.UpdatedAt,
 	}
@@ -67,7 +67,7 @@ func NewUser(params NewUserParams) (*User, error) {
 
 func (u *User) UpdateUser(params UpdateProfileParams) error {
 	updated := User{
-		ID: u.ID,
+		ID:        u.ID,
 		Email:     u.Email,
 		Name:      strings.TrimSpace(params.Name),
 		Username:  normalizeUsername(params.Username),
@@ -87,7 +87,6 @@ func (u *User) UpdateUser(params UpdateProfileParams) error {
 	*u = updated
 	return nil
 }
-
 
 func (u *User) validate() error {
 	if u.ID == "" {
