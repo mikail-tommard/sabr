@@ -16,6 +16,7 @@ type Config struct {
 	HTTPAddr        string
 	DatabaseDSN     string
 	JWTSecret       string
+	UsersServiceURL string
 	AccessTokenTTL  time.Duration
 	RefreshTokenTTL time.Duration
 }
@@ -25,6 +26,7 @@ func Load() (Config, error) {
 		HTTPAddr:        getEnv("APP_ADDR", defaultHTTPAddr),
 		DatabaseDSN:     os.Getenv("DB_DSN"),
 		JWTSecret:       os.Getenv("JWT_SECRET"),
+		UsersServiceURL: os.Getenv("USERS_SERVICE_URL"),
 		AccessTokenTTL:  getDurationEnv("ACCESS_TOKEN_TTL", defaultAccessTokenTTL),
 		RefreshTokenTTL: getDurationEnv("REFRESH_TOKEN_TTL", defaultRefreshTokenTTL),
 	}
@@ -34,6 +36,9 @@ func Load() (Config, error) {
 	}
 	if cfg.JWTSecret == "" {
 		return Config{}, errors.New("JWT_SECRET is required")
+	}
+	if cfg.UsersServiceURL == "" {
+		return Config{}, errors.New("USERS_SERVICE_URL is required")
 	}
 
 	return cfg, nil

@@ -39,14 +39,25 @@ func main() {
 		os.Exit(1)
 	}
 
-	authModule := auth.NewModule(dbpool, cfg.JWTSecret, cfg.AccessTokenTTL, cfg.RefreshTokenTTL, time.Now)
+	authModule, err := auth.NewModule(
+		dbpool,
+		cfg.JWTSecret,
+		cfg.UsersServiceURL,
+		cfg.AccessTokenTTL,
+		cfg.RefreshTokenTTL,
+		time.Now,
+	)
+	if err != nil {
+		logger.Error("build auth module", "error", err)
+		os.Exit(1)
+	}
 
 	router := http.NewServeMux()
 	router.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok"))
 	})
-	router.Handle("/auth/", authModule.API.Router())
+	router.Handle("/auth/", http.StripPrefix("/auth", authModule.API.Router()))
 
 	server := &http.Server{
 		Addr:              cfg.HTTPAddr,

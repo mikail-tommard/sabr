@@ -35,8 +35,6 @@ type authResponse struct {
 
 type userResponse struct {
 	ID        string `json:"id"`
-	Name      string `json:"name"`
-	Username  string `json:"username"`
 	Email     string `json:"email"`
 	Role      string `json:"role"`
 	CreatedAt string `json:"createdAt"`
@@ -180,7 +178,7 @@ func validateLogin(input usecase.LoginInput) error {
 
 func handleError(w http.ResponseWriter, err error) {
 	switch {
-	case errors.Is(err, domain.ErrEmailTaken), errors.Is(err, domain.ErrUsernameTaken):
+	case errors.Is(err, domain.ErrEmailTaken):
 		jsonpkg.Error(w, http.StatusConflict, err.Error())
 	case errors.Is(err, domain.ErrInvalidCredentials), errors.Is(err, domain.ErrInvalidRefreshToken):
 		jsonpkg.Error(w, http.StatusUnauthorized, err.Error())
@@ -198,11 +196,9 @@ func newAuthResponse(result usecase.AuthResult) authResponse {
 	}
 }
 
-func newUserResponse(user usecase.UserOutput) userResponse {
+func newUserResponse(user usecase.IdentityOutput) userResponse {
 	return userResponse{
 		ID:        user.ID,
-		Name:      user.Name,
-		Username:  user.Username,
 		Email:     user.Email,
 		Role:      user.Role,
 		CreatedAt: user.CreatedAt.UTC().Format(time.RFC3339),

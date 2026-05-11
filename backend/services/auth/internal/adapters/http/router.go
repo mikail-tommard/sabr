@@ -21,10 +21,10 @@ func NewAPI(handler *Handler, jwtManager *jwt.Manager) *API {
 
 func (a *API) Router() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /auth/register", a.Handler.Register)
-	mux.HandleFunc("POST /auth/login", a.Handler.Login)
-	mux.HandleFunc("POST /auth/refresh", a.Handler.Refresh)
-	mux.Handle("GET /auth/me", middleware.Auth(a.JWTManager)(http.HandlerFunc(a.Handler.Me)))
+	mux.HandleFunc("POST /register", a.Handler.Register)
+	mux.HandleFunc("POST /login", a.Handler.Login)
+	mux.HandleFunc("POST /refresh", a.Handler.Refresh)
+	mux.Handle("GET /me", middleware.Auth(a.JWTManager)(http.HandlerFunc(a.Handler.Me)))
 
 	return mux
 }

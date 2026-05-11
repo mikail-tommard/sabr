@@ -13,11 +13,10 @@ import (
 	"sabr/backend/services/auth/internal/domain"
 )
 
-type UserRepository interface {
-	Create(ctx context.Context, user domain.User) (domain.User, error)
-	GetByEmail(ctx context.Context, email string) (domain.User, error)
-	GetByUsername(ctx context.Context, username string) (domain.User, error)
-	GetByID(ctx context.Context, userID string) (domain.User, error)
+type IdentityRepository interface {
+	Create(ctx context.Context, identity domain.Identity) (domain.Identity, error)
+	GetByEmail(ctx context.Context, email string) (domain.Identity, error)
+	GetByID(ctx context.Context, userID string) (domain.Identity, error)
 }
 
 type RefreshTokenRepository interface {
@@ -33,6 +32,10 @@ type PasswordManager interface {
 
 type JWTManager interface {
 	Generate(userID string, role string, now time.Time) (string, time.Time, error)
+}
+
+type EventPublisher interface {
+	PublishUserRegistered(ctx context.Context, event domain.UserRegistered) error
 }
 
 type RegisterInput struct {
@@ -52,14 +55,12 @@ type RefreshInput struct {
 }
 
 type AuthResult struct {
-	User   UserOutput
+	User   IdentityOutput
 	Tokens TokenOutput
 }
 
-type UserOutput struct {
+type IdentityOutput struct {
 	ID        string
-	Name      string
-	Username  string
 	Email     string
 	Role      string
 	CreatedAt time.Time
@@ -73,27 +74,30 @@ type TokenOutput struct {
 }
 
 type Service struct {
-	users           UserRepository
+	identities      IdentityRepository
 	refreshTokens   RefreshTokenRepository
 	passwords       PasswordManager
 	jwt             JWTManager
+	events          EventPublisher
 	refreshTokenTTL time.Duration
 	now             func() time.Time
 }
 
 func NewService(
-	users UserRepository,
+	identities IdentityRepository,
 	refreshTokens RefreshTokenRepository,
 	passwords PasswordManager,
 	jwt JWTManager,
+	events EventPublisher,
 	refreshTokenTTL time.Duration,
 	now func() time.Time,
 ) *Service {
 	return &Service{
-		users:           users,
+		identities:      identities,
 		refreshTokens:   refreshTokens,
 		passwords:       passwords,
 		jwt:             jwt,
+		events:          events,
 		refreshTokenTTL: refreshTokenTTL,
 		now:             now,
 	}
@@ -105,12 +109,8 @@ func (s *Service) Register(ctx context.Context, input RegisterInput) (AuthResult
 	email := normalizeEmail(input.Email)
 	password := input.Password
 
-	if _, err := s.users.GetByEmail(ctx, email); err == nil {
+	if _, err := s.identities.GetByEmail(ctx, email); err == nil {
 		return AuthResult{}, domain.ErrEmailTaken
-	}
-
-	if _, err := s.users.GetByUsername(ctx, username); err == nil {
-		return AuthResult{}, domain.ErrUsernameTaken
 	}
 
 	passwordHash, err := s.passwords.Hash(password)
@@ -119,10 +119,8 @@ func (s *Service) Register(ctx context.Context, input RegisterInput) (AuthResult
 	}
 
 	now := s.now()
-	user, err := s.users.Create(ctx, domain.User{
+	identity, err := s.identities.Create(ctx, domain.Identity{
 		ID:           uuid.NewString(),
-		Name:         name,
-		Username:     username,
 		Email:        email,
 		PasswordHash: passwordHash,
 		Role:         domain.DefaultRole,
@@ -133,22 +131,32 @@ func (s *Service) Register(ctx context.Context, input RegisterInput) (AuthResult
 		return AuthResult{}, err
 	}
 
-	return s.issueTokens(ctx, user)
+	if err = s.events.PublishUserRegistered(ctx, domain.UserRegistered{
+		UserID:     identity.ID,
+		Email:      identity.Email,
+		Name:       name,
+		Username:   username,
+		OccurredAt: now,
+	}); err != nil {
+		return AuthResult{}, err
+	}
+
+	return s.issueTokens(ctx, identity)
 }
 
 func (s *Service) Login(ctx context.Context, input LoginInput) (AuthResult, error) {
 	email := normalizeEmail(input.Email)
 
-	user, err := s.users.GetByEmail(ctx, email)
+	identity, err := s.identities.GetByEmail(ctx, email)
 	if err != nil {
 		return AuthResult{}, domain.ErrInvalidCredentials
 	}
 
-	if err = s.passwords.Compare(user.PasswordHash, input.Password); err != nil {
+	if err = s.passwords.Compare(identity.PasswordHash, input.Password); err != nil {
 		return AuthResult{}, domain.ErrInvalidCredentials
 	}
 
-	return s.issueTokens(ctx, user)
+	return s.issueTokens(ctx, identity)
 }
 
 func (s *Service) Refresh(ctx context.Context, input RefreshInput) (AuthResult, error) {
@@ -168,27 +176,27 @@ func (s *Service) Refresh(ctx context.Context, input RefreshInput) (AuthResult, 
 		return AuthResult{}, err
 	}
 
-	user, err := s.users.GetByID(ctx, stored.UserID)
+	identity, err := s.identities.GetByID(ctx, stored.UserID)
 	if err != nil {
 		return AuthResult{}, domain.ErrUserNotFound
 	}
 
-	return s.issueTokens(ctx, user)
+	return s.issueTokens(ctx, identity)
 }
 
-func (s *Service) Me(ctx context.Context, userID string) (UserOutput, error) {
-	user, err := s.users.GetByID(ctx, userID)
+func (s *Service) Me(ctx context.Context, userID string) (IdentityOutput, error) {
+	identity, err := s.identities.GetByID(ctx, userID)
 	if err != nil {
-		return UserOutput{}, domain.ErrUserNotFound
+		return IdentityOutput{}, domain.ErrUserNotFound
 	}
 
-	return newUserOutput(user), nil
+	return newIdentityOutput(identity), nil
 }
 
-func (s *Service) issueTokens(ctx context.Context, user domain.User) (AuthResult, error) {
+func (s *Service) issueTokens(ctx context.Context, identity domain.Identity) (AuthResult, error) {
 	now := s.now()
 
-	accessToken, accessExpiresAt, err := s.jwt.Generate(user.ID, user.Role, now)
+	accessToken, accessExpiresAt, err := s.jwt.Generate(identity.ID, identity.Role, now)
 	if err != nil {
 		return AuthResult{}, err
 	}
@@ -201,7 +209,7 @@ func (s *Service) issueTokens(ctx context.Context, user domain.User) (AuthResult
 	refreshExpiresAt := now.Add(s.refreshTokenTTL)
 	refreshRecord := domain.RefreshToken{
 		ID:        uuid.NewString(),
-		UserID:    user.ID,
+		UserID:    identity.ID,
 		TokenHash: hashToken(refreshToken),
 		ExpiresAt: refreshExpiresAt,
 		CreatedAt: now,
@@ -211,7 +219,7 @@ func (s *Service) issueTokens(ctx context.Context, user domain.User) (AuthResult
 	}
 
 	return AuthResult{
-		User: newUserOutput(user),
+		User: newIdentityOutput(identity),
 		Tokens: TokenOutput{
 			AccessToken:           accessToken,
 			AccessTokenExpiresAt:  accessExpiresAt,
@@ -221,14 +229,12 @@ func (s *Service) issueTokens(ctx context.Context, user domain.User) (AuthResult
 	}, nil
 }
 
-func newUserOutput(user domain.User) UserOutput {
-	return UserOutput{
-		ID:        user.ID,
-		Name:      user.Name,
-		Username:  user.Username,
-		Email:     user.Email,
-		Role:      user.Role,
-		CreatedAt: user.CreatedAt,
+func newIdentityOutput(identity domain.Identity) IdentityOutput {
+	return IdentityOutput{
+		ID:        identity.ID,
+		Email:     identity.Email,
+		Role:      identity.Role,
+		CreatedAt: identity.CreatedAt,
 	}
 }
 
