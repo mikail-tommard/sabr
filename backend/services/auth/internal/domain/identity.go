@@ -2,13 +2,21 @@ package domain
 
 import "time"
 
-const DefaultRole = "Student"
+type Role string
+
+const (
+	RoleAdmin   Role = "admin"
+	RoleStudent Role = "student"
+	RoleMentor  Role = "mentor"
+	RoleAlumni  Role = "alumni"
+	DefaultRole      = RoleStudent
+)
 
 type Identity struct {
 	ID           string
 	Email        string
 	PasswordHash string
-	Role         string
+	Role         Role
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }

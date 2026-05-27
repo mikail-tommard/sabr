@@ -200,7 +200,7 @@ func newUserResponse(user usecase.IdentityOutput) userResponse {
 	return userResponse{
 		ID:        user.ID,
 		Email:     user.Email,
-		Role:      user.Role,
+		Role:      string(user.Role),
 		CreatedAt: user.CreatedAt.UTC().Format(time.RFC3339),
 	}
 }

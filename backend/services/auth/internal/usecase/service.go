@@ -62,7 +62,7 @@ type AuthResult struct {
 type IdentityOutput struct {
 	ID        string
 	Email     string
-	Role      string
+	Role      domain.Role
 	CreatedAt time.Time
 }
 
@@ -196,7 +196,7 @@ func (s *Service) Me(ctx context.Context, userID string) (IdentityOutput, error)
 func (s *Service) issueTokens(ctx context.Context, identity domain.Identity) (AuthResult, error) {
 	now := s.now()
 
-	accessToken, accessExpiresAt, err := s.jwt.Generate(identity.ID, identity.Role, now)
+	accessToken, accessExpiresAt, err := s.jwt.Generate(identity.ID, string(identity.Role), now)
 	if err != nil {
 		return AuthResult{}, err
 	}

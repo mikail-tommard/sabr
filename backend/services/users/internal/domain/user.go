@@ -5,15 +5,6 @@ import (
 	"time"
 )
 
-type Role string
-
-const (
-	RoleAdmin   Role = "admin"
-	RoleStudent Role = "student"
-	RoleMentor  Role = "mentor"
-	RoleAlumni  Role = "alumni"
-)
-
 type User struct {
 	ID        string
 	Email     string
@@ -23,7 +14,6 @@ type User struct {
 	Bio       string
 	CampusID  *string
 	Company   *string
-	Role      Role
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -53,7 +43,6 @@ func NewUser(params NewUserParams) (*User, error) {
 		Email:     normalizeEmail(params.Email),
 		Name:      strings.TrimSpace(params.Name),
 		Username:  normalizeUsername(params.Username),
-		Role:      RoleStudent,
 		CreatedAt: params.CreatedAt,
 		UpdatedAt: params.UpdatedAt,
 	}
@@ -65,7 +54,7 @@ func NewUser(params NewUserParams) (*User, error) {
 	return u, nil
 }
 
-func (u *User) UpdateUser(params UpdateProfileParams) error {
+func (u *User) UpdateProfile(params UpdateProfileParams) error {
 	updated := User{
 		ID:        u.ID,
 		Email:     u.Email,
@@ -75,7 +64,6 @@ func (u *User) UpdateUser(params UpdateProfileParams) error {
 		Bio:       strings.TrimSpace(params.Bio),
 		CampusID:  normalizeOptionalString(params.CampusID),
 		Company:   normalizeOptionalString(params.Company),
-		Role:      u.Role,
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: params.UpdatedAt,
 	}
@@ -101,29 +89,7 @@ func (u *User) validate() error {
 	if len(u.Username) < 3 {
 		return ErrInvalidUsername
 	}
-	if !isValidRole(u.Role) {
-		return ErrInvalidRole
-	}
 	return nil
-}
-
-func (u *User) ChangeRole(role Role, updatedAt time.Time) error {
-	if !isValidRole(role) {
-		return ErrInvalidRole
-	}
-
-	u.Role = role
-	u.UpdatedAt = updatedAt
-	return nil
-}
-
-func isValidRole(role Role) bool {
-	switch role {
-	case RoleAdmin, RoleStudent, RoleMentor, RoleAlumni:
-		return true
-	default:
-		return false
-	}
 }
 
 func normalizeEmail(email string) string {

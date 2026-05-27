@@ -37,9 +37,10 @@ type UpdateProfileInput struct {
 	Company   *string
 }
 
-func NewUserService(repo UserRepository) *UserService {
+func NewService(repo UserRepository) *UserService {
 	return &UserService{
 		repo: repo,
+		now:  time.Now,
 	}
 }
 
@@ -88,14 +89,14 @@ func (s *UserService) UpdateProfile(ctx context.Context, input UpdateProfileInpu
 		return err
 	}
 
-	nexUsername := strings.ToLower(strings.TrimSpace(input.Username))
-	if user.Username != nexUsername {
-		if _, err := s.repo.GetByUsername(ctx, nexUsername); err == nil {
+	nextUsername := strings.ToLower(strings.TrimSpace(input.Username))
+	if user.Username != nextUsername {
+		if _, err := s.repo.GetByUsername(ctx, nextUsername); err == nil {
 			return domain.ErrUsernameTaken
 		}
 	}
 
-	err = user.UpdateUser(domain.UpdateProfileParams{
+	err = user.UpdateProfile(domain.UpdateProfileParams{
 		Name:      input.Name,
 		Username:  input.Username,
 		AvatarURL: input.AvatarURL,
@@ -105,19 +106,6 @@ func (s *UserService) UpdateProfile(ctx context.Context, input UpdateProfileInpu
 		UpdatedAt: s.now(),
 	})
 	if err != nil {
-		return err
-	}
-
-	return s.repo.Update(ctx, user)
-}
-
-func (s *UserService) ChangeRole(ctx context.Context, id string, role domain.Role) error {
-	user, err := s.repo.GetByID(ctx, id)
-	if err != nil {
-		return err
-	}
-
-	if err := user.ChangeRole(role, s.now()); err != nil {
 		return err
 	}
 
